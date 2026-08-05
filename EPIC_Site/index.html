@@ -845,37 +845,72 @@ try {
 
   async function setStatus(id, status) {
     if (!id) return;
+
+    // 1. إيجاد الطالب في القائمة وتغيير حالته فوراً في الشاشة
+    const student = currentList.find(item => item.id === id);
+    if (!student) return;
+
+    const oldStatus = student.status || 'waiting'; // حفظ الحالة القديمة للطوارئ
+    student.status = status; // تغيير الحالة (مقبول أو انتظار) استباقياً
+
+    // 2. تحديث الشاشة فوراً وبدون أي انتظار
+    renderViewTabs();
+    renderTabs();
+    renderTable();
+
+    // 3. إرسال الطلب لجوجل شيتس في الخلفية بصمت
     try {
       const params = new URLSearchParams();
       params.set('action', 'setStatus');
       params.set('id', id);
       params.set('status', status);
+      
       await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params });
-      await refreshFromSheet();
+    } catch (err) {
+      // 4. خطة الأمان: في حال فشل الاتصال، نرجع الحالة القديمة للسطر وننبهك
+      student.status = oldStatus;
+      modalTotal.textContent = '⚠️ تعذّر تحديث الحالة بسبب مشكلة في الاتصال.';
       renderViewTabs();
       renderTabs();
       renderTable();
-    } catch (err) {
-      modalTotal.textContent = 'تعذّر تحديث الحالة، حاول مرة أخرى.';
     }
   }
 
+
   async function deleteEntry(id) {
-    if (!id) return;
-    try {
-      const params = new URLSearchParams();
-      params.set('action', 'delete');
-      params.set('id', id);
-      await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params });
-      await refreshFromSheet();
-      modalTotal.textContent = `إجمالي التسجيلات: ${currentList.length}`;
-      renderViewTabs();
-      renderTabs();
-      renderTable();
-    } catch (err) {
-      modalTotal.textContent = 'تعذّر الحذف، حاول مرة أخرى.';
-    }
+  if (!id) return;
+
+  // 1. أخذ نسخة احتياطية من الطالب قبل حذفه (لحماية البيانات لو فصل النت)
+  const studentIndex = currentList.findIndex(item => item.id === id);
+  if (studentIndex === -1) return;
+  const backupStudent = currentList[studentIndex];
+
+  // 2. التحديث الاستباقي: حذف الطالب وتحديث الشاشة فوراً! (بدون أي انتظار)
+  currentList.splice(studentIndex, 1);
+  modalTotal.textContent = `إجمالي التسجيلات: ${currentList.length}`;
+  renderViewTabs();
+  renderTabs();
+  renderTable();
+
+  // 3. إرسال طلب الحذف لجوجل شيتس في الخلفية بصمت
+  try {
+    const params = new URLSearchParams();
+    params.set('action', 'delete');
+    params.set('id', id);
+
+    // إرسال الطلب (بدون ما ننتظر تحميل الداتا بيس من الصفر)
+    await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params });
+
+  } catch (err) {
+    // 4. الخطة ب (الأمان): لو حدث خطأ بالسيرفر أو فصل النت، نرجع الطالب للقائمة وننبهك
+    currentList.splice(studentIndex, 0, backupStudent); // إرجاع الطالب للمصفوفة
+    modalTotal.textContent = '⚠️ تعذّر الحذف بسبب مشكلة في الاتصال، تمت إعادة السطر.';
+    renderViewTabs();
+    renderTabs();
+    renderTable();
   }
+}
+
 
   async function refreshFromSheet() {
     const res = await fetch(GOOGLE_SCRIPT_URL, { method: 'GET' });
