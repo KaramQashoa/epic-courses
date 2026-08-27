@@ -708,19 +708,28 @@ try {
       return;
     }
 
-    const params = new URLSearchParams();
-    params.set('action', 'register');
-    params.set('name', document.getElementById('studentName').value.trim());
-    params.set('phone', document.getElementById('phone').value.trim());
-    params.set('grade', document.getElementById('grade').value);
-    params.set('courses', Array.from(selected).join(','));
-
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: params
-      });
+      // --- التعديل السحري: إرسال كل كورس في سطر منفصل لجوجل شيتس ---
+      const selectedCourses = Array.from(selected);
+      const studentName = document.getElementById('studentName').value.trim();
+      const studentPhone = document.getElementById('phone').value.trim();
+      const studentGrade = document.getElementById('grade').value;
+
+      // عمل حلقة (Loop) لإرسال كل كورس كطلب مستقل
+      for (const course of selectedCourses) {
+        const params = new URLSearchParams();
+        params.set('action', 'register');
+        params.set('name', studentName);
+        params.set('phone', studentPhone);
+        params.set('grade', studentGrade);
+        params.set('courses', course); // نرسل اسم كورس واحد فقط في كل سطر
+
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: params
+        });
+      }
 
       msg.textContent = 'تم التسجيل بنجاح! سنتواصل معك قريبًا.';
       msg.classList.add('ok');
