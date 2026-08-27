@@ -920,10 +920,6 @@ try {
 
   async function showRegistrations() {
     modalBg.classList.add('show');
-    modalTotal.textContent = 'جارٍ التحميل...';
-    viewTabs.innerHTML = '';
-    courseTabs.innerHTML = '';
-    courseTable.innerHTML = '';
 
     if (!scriptConfigured()) {
       modalTotal.textContent = '';
@@ -931,25 +927,49 @@ try {
       return;
     }
 
-    try {
-      await refreshFromSheet();
-      modalTotal.textContent = `إجمالي التسجيلات: ${currentList.length}`;
-      activeCourse = null;
-      currentView = 'waiting';
+    // --- الفحص الذكي للتحميل الفوري ---
+    if (currentList && currentList.length > 0) {
+      modalTotal.textContent = `إجمالي التسجيلات: ${currentList.length} (جاري تحديث القائمة ⏳...)`;
       renderViewTabs();
       renderTabs();
       renderTable();
+    } else {
+      modalTotal.textContent = 'جارٍ جلب البيانات من قاعدة البيانات... يرجى الانتظار ثوانٍ قليلة ⏳';
+      viewTabs.innerHTML = '';
+      courseTabs.innerHTML = '';
+      courseTable.innerHTML = '<div class="empty-note">جارٍ التحميل من جوجل شيتس...</div>';
+    }
+
+    try {
+      await refreshFromSheet();
+      modalTotal.textContent = `إجمالي التسجيلات: ${currentList.length}`;
+      currentView = currentView || 'waiting'; 
+      renderViewTabs();
+      renderTabs();
+      renderTable();
+
       if (!currentList.length) {
         courseTable.innerHTML = '<div class="empty-note">لا يوجد تسجيلات بعد.</div>';
       }
     } catch (err) {
-      currentList = [];
-      modalTotal.textContent = '';
-      courseTable.innerHTML = '<div class="empty-note">تعذّر الاتصال بقاعدة البيانات. تأكد من رابط السكربت وصلاحيات الوصول.</div>';
+      if (currentList.length === 0) { 
+        currentList = [];
+        modalTotal.textContent = '';
+        courseTable.innerHTML = '<div class="empty-note">تعذّر الاتصال بقاعدة البيانات. تأكد من رابط السكربت وصلاحيات الوصول.</div>';
+      } else {
+        modalTotal.textContent = `إجمالي التسجيلات: ${currentList.length} (فشل تحديث القائمة المخفي)`;
+      }
     }
   }
 
   if (adminBtn) adminBtn.addEventListener('click', () => {
+    
+    // --- خدعة الجلب المسبق (Prefetching) ---
+    // أول ما يضغط الزر، بنشغل التحميل بالخلفية بدون ما نعطله!
+    if (scriptConfigured() && currentList.length === 0) {
+      refreshFromSheet().catch(e => console.error("Prefetch failed", e)); 
+    }
+
     if (adminUnlocked) { showRegistrations(); return; }
     passErr.style.display = 'none';
     passInput.value = '';
