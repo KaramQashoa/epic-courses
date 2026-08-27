@@ -383,9 +383,9 @@
   <div class="wrap">
     <div class="stats">
       <div class="stat"><b>+300</b><span>طالب مسجّل</span></div>
-      <div class="stat"><b>6</b><span>مواد دراسية</span></div>
+      <div class="stat"><b>8</b><span>مواد دراسية</span></div>
       <div class="stat"><b>3 - 10</b><span>الصفوف المستهدفة</span></div>
-      <div class="stat"><b>10</b><span>دورات متخصصة</span></div>
+      <div class="stat"><b>12</b><span>دورات متخصصة</span></div>
     </div>
   </div>
 </header>
@@ -594,6 +594,8 @@
           <div class="chk" data-v="English Explorers">English Explorers</div>
           <div class="chk" data-v="عبري">عبري</div>
           <div class="chk" data-v="كيمياء تحضيري عاشر">كيمياء</div>
+          <div class="chk" data-v="مسار الروبوتيكا">مسار الروبوتيكا</div>
+          <div class="chk" data-v="ورشة فن الزجاج">ورشة فن الزجاج</div>
         </div>
       </div>
       <button type="submit" class="submit-btn" id="submitBtn">تأكيد التسجيل</button>
@@ -751,7 +753,7 @@ try {
   const passSubmit = document.getElementById('passSubmit');
   const closePass = document.getElementById('closePass');
 
-  const ALL_COURSES = ['تحضير الحساب', 'رياضيات 3 وحدات', 'رياضيات 4 وحدات', 'رياضيات 5 وحدات', 'فيزياء 5 وحدات', 'كيمياء تحضيري عاشر', 'عربي تحضيري عاشر', 'English Unlocked', 'English Explorers', 'عبري'];
+  const ALL_COURSES = ['تحضير الحساب', 'رياضيات 3 وحدات', 'رياضيات 4 وحدات', 'رياضيات 5 وحدات', 'فيزياء 5 وحدات', 'كيمياء تحضيري عاشر', 'عربي تحضيري عاشر', 'English Unlocked', 'English Explorers', 'مسار الروبوتيكا', 'ورشة فن الزجاج', 'عبري'];
   let currentList = [];
   let activeCourse = null;
   let currentView = 'waiting'; // 'waiting' | 'accepted'
