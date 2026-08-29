@@ -686,6 +686,8 @@ try {
   const submitBtn = document.getElementById('submitBtn');
   const phoneInput = document.getElementById('phone');
   const phoneErr = document.getElementById('phoneErr');
+  const idInput = document.getElementById('idNumber');
+  const idErr = document.getElementById('idErr');
 
   function phoneDigitsValid(value) {
     const digits = value.replace(/\D/g, '');
@@ -703,6 +705,31 @@ try {
     }
   });
 
+  if (idInput) {
+    idInput.addEventListener('input', function() {
+      if (/\D/.test(this.value)) {
+        idErr.textContent = 'الرجاء إدخال أرقام فقط (يمنع استخدام الأحرف).';
+        idErr.style.display = 'block';
+        this.style.borderColor = '#F0603B';
+        this.value = this.value.replace(/\D/g, ''); 
+      } else {
+        idErr.style.display = 'none';
+        this.style.borderColor = '';
+      }
+    });
+
+    idInput.addEventListener('blur', function() {
+      if (this.value.length > 0 && this.value.length !== 9) {
+        idErr.textContent = 'رقم الهوية غير صحيح، يجب أن يتكون من 9 أرقام بالضبط.';
+        idErr.style.display = 'block';
+        this.style.borderColor = '#F0603B';
+      } else if (this.value.length === 9) {
+        idErr.style.display = 'none';
+        this.style.borderColor = '';
+      }
+    });
+  }
+
   if (form) form.addEventListener('submit', async (e) => {
     e.preventDefault();
     msg.className = 'form-msg';
@@ -714,6 +741,15 @@ try {
       msg.textContent = 'الرجاء تصحيح رقم الهاتف قبل الإرسال.';
       msg.classList.add('err');
       return;
+    }
+    if (idInput && idInput.value.length !== 9) {
+      idErr.textContent = 'الرجاء التأكد من كتابة 9 أرقام للهوية قبل الإرسال.';
+      idErr.style.display = 'block';
+      idInput.style.borderColor = '#F0603B';
+      idInput.focus();
+      msg.textContent = 'الرجاء تصحيح رقم الهوية قبل الإرسال.';
+      msg.classList.add('err');
+      return; 
     }
     if (selected.size === 0) {
       msg.textContent = 'الرجاء اختيار دورة واحدة على الأقل.';
