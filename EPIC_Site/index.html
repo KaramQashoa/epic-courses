@@ -576,6 +576,11 @@
         <input type="text" id="studentName" placeholder="مثال: أحمد محمد فضيلي" required>
       </div>
       <div class="field">
+        <label>رقم الهوية</label>
+        <input type="tel" id="idNumber" inputmode="numeric" placeholder="أدخل رقم الهوية (9 أرقام)" required>
+        <div id="idErr" style="color:#F0603B;font-size:12.5px;font-weight:700;margin-top:6px;display:none;">الرجاء إدخال رقم هوية صحيح مكون من 9 أرقام.</div>
+      </div>
+      <div class="field">
         <label>رقم هاتف ولي الأمر</label>
         <input type="tel" id="phone" inputmode="numeric" placeholder="05X-XXX-XXXX" required>
         <div id="phoneErr" style="color:#F0603B;font-size:12.5px;font-weight:700;margin-top:6px;display:none;">الرجاء إدخال رقم هاتف مكوّن من 10 أرقام بالضبط.</div>
@@ -730,6 +735,7 @@ try {
       // --- التعديل السحري: إرسال كل كورس في سطر منفصل لجوجل شيتس ---
       const selectedCourses = Array.from(selected);
       const studentName = document.getElementById('studentName').value.trim();
+      const studentIdNum = document.getElementById('idNumber').value.trim();
       const studentPhone = document.getElementById('phone').value.trim();
       const studentGrade = document.getElementById('grade').value;
 
@@ -738,6 +744,7 @@ try {
         const params = new URLSearchParams();
         params.set('action', 'register');
         params.set('name', studentName);
+        params.set('idNumber', studentIdNum);
         params.set('phone', studentPhone);
         params.set('grade', studentGrade);
         params.set('courses', course); // نرسل اسم كورس واحد فقط في كل سطر
@@ -854,6 +861,7 @@ try {
       <tr>
         <td>${i + 1}</td>
         <td>${r.name || '-'} ${statusBadge}</td>
+        <td>${r.idNumber || '-'}</td>
         <td>${r.phone || '-'}</td>
         <td>${r.grade || '-'}</td>
         <td style="display:flex; gap:6px; align-items:center;">
@@ -862,8 +870,9 @@ try {
         </td>
       </tr>`;
     }).join('');
+    
     courseTable.innerHTML = `<table>
-      <thead><tr><th>#</th><th>الاسم</th><th>الهاتف</th><th>الصف</th><th></th></tr></thead>
+      <thead><tr><th>#</th><th>الاسم</th><th>رقم الهوية</th><th>الهاتف</th><th>الصف</th><th></th></tr></thead>
       <tbody>${trs}</tbody>
     </table>`;
 
