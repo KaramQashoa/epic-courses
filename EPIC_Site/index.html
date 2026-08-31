@@ -833,7 +833,10 @@ if (phoneInput) phoneInput.addEventListener('input', () => {
       const selectedCourses = Array.from(selected);
       const studentName = document.getElementById('studentName').value.trim();
       const studentIdNum = document.getElementById('idNumber').value.trim();
-      const studentPhone = document.getElementById('phone').value.trim();
+      let studentPhone = document.getElementById('phone').value.trim();
+      if (studentPhone && !studentPhone.startsWith('0')) {
+        studentPhone = '0' + studentPhone;
+      }
       const parentName = document.getElementById('parentName').value.trim();
       const studentGrade = document.getElementById('grade').value;
 
