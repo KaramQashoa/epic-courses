@@ -960,9 +960,9 @@ if (phoneInput) phoneInput.addEventListener('input', () => {
       <tr>
         <td>${i + 1}</td>
         <td>${r.name || '-'} ${statusBadge}</td>
+        <td>${r.parentName || '-'}</td>
         <td>${r.idNumber || '-'}</td>
         <td>${r.phone || '-'}</td>
-        <td>${r.parentName || '-'}</td>
         <td>${r.grade || '-'}</td>
         <td style="display:flex; gap:6px; align-items:center;">
           ${actionBtn}
@@ -972,7 +972,7 @@ if (phoneInput) phoneInput.addEventListener('input', () => {
     }).join('');
     
     courseTable.innerHTML = `<table>
-      <thead><tr><th>#</th><th>الاسم</th><th>رقم الهوية</th><th>الهاتف</th><th>اسم ولي الأمر</th><th>الصف</th><th></th></tr></thead>
+      <thead><tr><th>#</th><th>الاسم</th><th>اسم ولي الأمر</th><th>رقم الهوية</th><th>الهاتف</th><th>الصف</th><th></th></tr></thead>
       <tbody>${trs}</tbody>
     </table>`;
 
