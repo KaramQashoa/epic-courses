@@ -737,20 +737,25 @@ try {
   const idErr = document.getElementById('idErr');
 
   function phoneDigitsValid(value) {
-    const digits = value.replace(/\D/g, '');
-    return digits.length === 10;
-  }
+  const digits = value.replace(/\D/g, '');
+  // الشرط صار: الطول 10 أرقام (&&) يبدأ بـ 05
+  return digits.length === 10 && digits.startsWith('05');
+}
 
-  if (phoneInput) phoneInput.addEventListener('input', () => {
-    const digits = phoneInput.value.replace(/\D/g, '');
-    if (digits.length === 0 || digits.length === 10) {
-      phoneErr.style.display = 'none';
-      phoneInput.style.borderColor = '';
-    } else {
-      phoneErr.style.display = 'block';
-      phoneInput.style.borderColor = '#F0603B';
-    }
-  });
+if (phoneInput) phoneInput.addEventListener('input', () => {
+  const digits = phoneInput.value.replace(/\D/g, '');
+  
+  // إذا الخانة فاضية، أو (الرقم 10 أرقام وبيبدأ بـ 05) بنخفي الخطأ
+  if (digits.length === 0 || (digits.length === 10 && digits.startsWith('05'))) {
+    phoneErr.style.display = 'none';
+    phoneInput.style.borderColor = '';
+  } else {
+    // إذا الرقم غلط بنضوي أحمر وبنغير النص عشان نفهمه السبب
+    phoneErr.textContent = 'الرجاء إدخال رقم هاتف صحيح (10 أرقام تبدأ بـ 05).';
+    phoneErr.style.display = 'block';
+    phoneInput.style.borderColor = '#F0603B';
+  }
+});
 
   if (idInput) {
     idInput.addEventListener('input', function() {
